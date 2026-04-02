@@ -12,26 +12,12 @@
 <body class="bg-light d-flex flex-column min-vh-100">
 
     <div class="container mt-5 flex-grow-1">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
-                
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-center mb-3">
-                            <i class="bi bi-cloud-sun-fill display-4 text-primary"></i>
-                        </div>
-                        <h2 class="text-center mb-4">Weather Pro</h2>
-                        
-                        <form>
-                            <label class="form-label" for="txtCity">City Search</label>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" id="txtCity" placeholder="e.g. Cookeville">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" id="btnSearch" type="button">Search</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 mt-4">
+
+                <div class="text-center mb-4">
+                    <img src="https://files.catbox.moe/gfn9kv.png" alt="Weather Pro Logo" height="60" class="mb-2">
+                    <h2 class="font-weight-bold">Weather Pro</h2>
                 </div>
 
                 <div class="card mb-4 shadow-sm border-0 d-none" id="currentWeatherCard">
@@ -104,52 +90,10 @@
             95: { label: "Thunderstorms", icon: "bi-cloud-lightning-rain-fill text-dark" }
         };
 
-        document.querySelector('#btnSearch').addEventListener('click', function (e) {
-            let strCity = document.querySelector('#txtCity').value;
-            
-            let blnError = false;
-            let strError = '';
-
-            if (strCity.trim().length < 2) {
-                blnError = true;
-                strError += '<p>Please enter a valid city name.</p>';
-            }
-
-            if (blnError == true) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Search Failed',
-                    html: strError,
-                    showConfirmButton: true,
-                    confirmButtonText: 'Fix It'
-                });
-            } else {
-                let strGeoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${strCity}&count=1&language=en&format=json`;
-                
-                fetch(strGeoUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        let objLocation = data.results[0];
-                        let strLocationName = `${objLocation.name}`;
-                        
-                        localStorage.setItem('savedCity', strLocationName);
-                        
-                        getWeather(objLocation.latitude, objLocation.longitude, strLocationName);
-                        document.querySelector('#txtCity').value = '';
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Location Not Found',
-                            text: 'Could not find that city. Please try again.'
-                        });
-                    }
-                })
-                .catch(error => Swal.fire({icon: 'error', title: 'Network Error'}));
-            }
-        });
-
-        function getWeather(lat, lon, locationName) {
+        function getCookevilleWeather() {
+            let lat = 36.1628;
+            let lon = -85.5016;
+            let locationName = "Cookeville";
             let strWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code&timezone=auto&temperature_unit=fahrenheit`;
 
             fetch(strWeatherUrl)
@@ -170,11 +114,7 @@
             .catch(error => Swal.fire({icon: 'error', title: 'Weather Data Error'}));
         }
 
-        let strSavedCity = localStorage.getItem('savedCity');
-        if (strSavedCity != null) {
-            document.querySelector('#txtCity').value = strSavedCity; 
-            document.querySelector('#btnSearch').click();
-        }
+        getCookevilleWeather();
     </script>
 </body>
 </html>
